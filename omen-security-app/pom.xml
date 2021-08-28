@@ -11,5 +11,11 @@
 
     <artifactId>omen-security-app</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.omen.learning</groupId>
+            <artifactId>omen-security-core</artifactId>
+            <version>${omen.security.version}</version>
+        </dependency>
+    </dependencies>
 </project>
