@@ -1,6 +1,7 @@
 package com.imooc.browser;
 
 import com.imooc.browser.auth.ImoocAuthenticationSuccessHandler;
+import com.imooc.browser.auth.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityProperties securityProperties;
     private final ImoocAuthenticationSuccessHandler imoocAuthenticationSuccessHandler;
-
+    private final ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -34,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()
                 .loginPage("/authentication/require")
                 .loginProcessingUrl("/authentication/form")
-                .successHandler(imoocAuthenticationSuccessHandler)
+                .successHandler(imoocAuthenticationSuccessProHandler)
                 .and()
                 //对请求进行授权
                 .authorizeRequests()
