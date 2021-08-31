@@ -1,5 +1,8 @@
 package com.imooc.browser;
 
+import com.imooc.core.properties.SecurityProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,7 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @date : 2021/8/30 9:55 上午
  */
 @Configuration
+@RequiredArgsConstructor
+@EnableConfigurationProperties(SecurityProperties.class)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final SecurityProperties securityProperties;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -22,12 +30,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         //设置认证方式
         http.formLogin()
-                .loginPage("/imooc-signIn.html")
+                .loginPage("/authentication/require")
                 .loginProcessingUrl("/authentication/form")
                 .and()
                 //对请求进行授权
                 .authorizeRequests()
-                .antMatchers("/imooc-signIn.html").permitAll()
+                .antMatchers(securityProperties.getBrowser().getLoginPage(), "/authentication/require").permitAll()
                 //认证请求
                 .anyRequest()
                 //都需要身份认证
