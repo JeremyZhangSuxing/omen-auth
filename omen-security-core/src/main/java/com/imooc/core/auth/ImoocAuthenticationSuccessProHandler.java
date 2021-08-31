@@ -1,5 +1,6 @@
-package com.imooc.browser.auth;
+package com.imooc.core.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imooc.core.properties.BrowserProperties;
 import com.imooc.core.properties.SecurityProperties;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +26,20 @@ import java.io.IOException;
 @Component("imoocAuthenticationSuccessProHandler")
 public class ImoocAuthenticationSuccessProHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     private final SecurityProperties securityProperties;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws ServletException, IOException {
         log.info(">>>>>>>登陆成功<<<<<<<：{}", securityProperties.getBrowser().getLoginType());
-
+        //jso
         if (BrowserProperties.LoginType.JSON == securityProperties.getBrowser().getLoginType()) {
-            response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             log.info(ReflectionToStringBuilder.toString(authentication, ToStringStyle.MULTI_LINE_STYLE));
+            response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+            response.getWriter().write(objectMapper.writeValueAsString(authentication));
+
+        } else {
+            super.onAuthenticationSuccess(request, response, authentication);
         }
-        super.onAuthenticationSuccess(request, response, authentication);
     }
 }

@@ -1,4 +1,4 @@
-package com.imooc.browser.auth;
+package com.imooc.core.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

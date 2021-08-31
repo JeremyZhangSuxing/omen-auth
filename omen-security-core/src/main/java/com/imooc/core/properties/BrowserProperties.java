@@ -13,7 +13,7 @@ public class BrowserProperties {
     private LoginType loginType = LoginType.JSON;
 
     public enum LoginType {
-        JSON, HTML;
+        JSON, REDIRECT;
     }
 
 }
