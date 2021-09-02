@@ -1,14 +1,15 @@
 package com.imooc.core.validate.code;
 
 import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
+import com.imooc.core.properties.SecurityProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -31,6 +32,8 @@ import java.io.IOException;
 public class ValidateFilter extends OncePerRequestFilter {
     private ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
+    private SecurityProperties securityProperties;
 
     /**
      * 图像验证码代码优化
@@ -40,12 +43,12 @@ public class ValidateFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (StringUtils.equals("/authentication/form", request.getRequestURI()) && StringUtils.equalsIgnoreCase(HttpMethod.POST.name(), request.getMethod())) {
-            log.info(">>>>>>>>>>>> 验证码校验开始 <<<<<<<<<<<<<<<<<");
+        if (shouldBeValidate(request.getRequestURI())) {
+            log.info(">>>>>>>>>>>> 验证码校验开始 <<<<<<<<<<<<<<<<<, 配置的url----->>>>" + request.getRequestURI());
             try {
                 validateCode(new ServletWebRequest(request, response));
             } catch (ValidateCodeException e) {
-                log.error(">>>>>>>>>>>> 验证码校验失败 <<<<<<<<<<<<<<<<<",e);
+                log.error(">>>>>>>>>>>> 验证码校验失败 <<<<<<<<<<<<<<<<<", e);
                 imoocAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
                 return;
             }
@@ -70,5 +73,12 @@ public class ValidateFilter extends OncePerRequestFilter {
         if (!StringUtils.equals(codeRequest, codeInSession.getCode())) {
             throw new ValidateCodeException("输入的验证码不正确");
         }
+    }
+
+    private boolean shouldBeValidate(String requestUrl) {
+        return securityProperties.getImage()
+                .getUrls()
+                .stream()
+                .anyMatch(configUrl -> antPathMatcher.match(configUrl, requestUrl));
     }
 }

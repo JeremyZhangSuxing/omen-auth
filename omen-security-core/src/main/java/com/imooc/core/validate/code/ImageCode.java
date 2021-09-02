@@ -26,6 +26,6 @@ public class ImageCode {
     }
 
     public boolean isExpired(){
-        return this.expireTime.isAfter(LocalDateTime.now());
+        return this.expireTime.isBefore(LocalDateTime.now());
     }
 }

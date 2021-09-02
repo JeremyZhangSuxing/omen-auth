@@ -5,8 +5,10 @@ import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
 import com.imooc.core.auth.ImoocAuthenticationSuccessHandler;
 import com.imooc.core.auth.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
+import com.imooc.core.validate.code.ImageCodeGenerator;
 import com.imooc.core.validate.code.ValidateFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,10 +37,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(value = ImageCodeGenerator.class)
+    public ImageCodeGenerator imageCodeGenerator() {
+        return new ImageCodeGenerator(securityProperties);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         ValidateFilter validateFilter = new ValidateFilter();
         validateFilter.setImoocAuthenticationFailureHandler(imoocAuthenticationFailureHandler);
+        validateFilter.setSecurityProperties(securityProperties);
         //设置认证方式
         http.addFilterBefore(validateFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
