@@ -1,7 +1,10 @@
 package com.imooc.core.validate.code;
 
 import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
@@ -21,32 +24,51 @@ import java.io.IOException;
  * @author suxing.zhang
  * @date 2021/8/31 22:24
  **/
-@RequiredArgsConstructor
+@Data
+@Slf4j
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class ValidateFilter extends OncePerRequestFilter {
-    private final ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
+    private ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
+    /**
+     * 图像验证码代码优化
+     * 验证码的基本参数可配：图片大小、验证码长度、验证码有效时间
+     * 验证码拦截的接口可配置：即哪些接口需要执行验证码的拦截逻辑
+     * 验证码的生成逻辑可配
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (StringUtils.equals("/authentication/form", request.getRequestURI()) && StringUtils.equalsIgnoreCase(HttpMethod.POST.name(), request.getMethod())) {
-
+            log.info(">>>>>>>>>>>> 验证码校验开始 <<<<<<<<<<<<<<<<<");
+            try {
+                validateCode(new ServletWebRequest(request, response));
+            } catch (ValidateCodeException e) {
+                log.error(">>>>>>>>>>>> 验证码校验失败 <<<<<<<<<<<<<<<<<",e);
+                imoocAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                return;
+            }
         }
+        filterChain.doFilter(request, response);
     }
 
     private void validateCode(ServletWebRequest request) throws ServletRequestBindingException {
+        //从当前的请求中获取到验证码信息
         ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(request, ValidateCodeController.SESSION_KEY);
         String codeRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "imageCode");
 
         if (StringUtils.isBlank(codeRequest)) {
             throw new ValidateCodeException("验证码不能为空");
         }
-
-        if (null==codeInSession) {
+        if (null == codeInSession) {
             throw new ValidateCodeException("验证码信息不存在");
         }
-        if(codeInSession.isExpired()) {
+        if (codeInSession.isExpired()) {
             throw new ValidateCodeException("验证码已经过期");
-
+        }
+        if (!StringUtils.equals(codeRequest, codeInSession.getCode())) {
+            throw new ValidateCodeException("输入的验证码不正确");
         }
     }
 }

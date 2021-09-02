@@ -5,6 +5,7 @@ import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
 import com.imooc.core.auth.ImoocAuthenticationSuccessHandler;
 import com.imooc.core.auth.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
+import com.imooc.core.validate.code.ValidateFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author : Knight
@@ -35,18 +37,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        ValidateFilter validateFilter = new ValidateFilter();
+        validateFilter.setImoocAuthenticationFailureHandler(imoocAuthenticationFailureHandler);
         //设置认证方式
-        http.formLogin()
+        http.addFilterBefore(validateFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin()
                 .loginPage("/authentication/require")
                 .loginProcessingUrl("/authentication/form")
                 .successHandler(imoocAuthenticationSuccessProHandler)
                 .failureHandler(imoocAuthenticationFailureHandler)
+
                 .and()
                 //对请求进行授权
                 .authorizeRequests()
                 .antMatchers(securityProperties.getBrowser().getLoginPage(),
                         "/authentication/require",
-                         "/code/image").permitAll()
+                        "/code/image").permitAll()
                 //认证请求
                 .anyRequest()
                 //都需要身份认证

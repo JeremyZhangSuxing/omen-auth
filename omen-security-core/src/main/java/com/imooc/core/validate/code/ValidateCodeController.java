@@ -20,13 +20,14 @@ import java.util.Random;
  **/
 @RestController
 public class ValidateCodeController {
-    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+    private final SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
     public static final String SESSION_KEY = "IMAGE_CODE_SESSION";
+
     @GetMapping("/code/image")
     public void createImageCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        //生成的imageCode 放入session中
         ImageCode imageCode = generate();
-        sessionStrategy.setAttribute(new ServletWebRequest(request), "", "");
+        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY, imageCode);
         ImageIO.write(imageCode.getBufferedImage(), "JPEG", response.getOutputStream());
     }
 
@@ -63,10 +64,6 @@ public class ValidateCodeController {
 
     /**
      * 生成随机背景条纹
-     *
-     * @param fc
-     * @param bc
-     * @return
      */
     private Color getRandColor(int fc, int bc) {
         Random random = new Random();

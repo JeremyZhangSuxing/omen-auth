@@ -31,6 +31,7 @@ public class ImoocAuthenticationFailureHandler extends SimpleUrlAuthenticationFa
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         log.info(">>>>>>>>>>>>>>登录失败<<<<<<<<<<<<<");
         if (BrowserProperties.LoginType.JSON.equals(securityProperties.getBrowser().getLoginType())) {
+            log.info(">>>>>>>>>>>>>>登录失败<<<<<<<<<<<<<");
             httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             httpServletResponse.getWriter().write(objectMapper.writeValueAsString(e));
