@@ -9,3 +9,8 @@ OncePerRequestFilter 保证这个过滤期每次只会被调用一次
 rememberMe  主要是通过 RememberMeAuthenticationFilter 此处对于SecurityConfig 中出现的循环依赖的解决，笔者的编码习惯是构造的的方式导入bean，
 因此需要将此 bean 单独注入。
 
+短信验证码登录功能 不是spring 自带的登录流程需要自己去实现。具体参照 用户名密码模式登录的方式。
+参照userNamePassword 登录设计的组件
+ SmsAuthenticationFilter ---> 构造出 sms定制的authentication -----> SmsAuthenticationProvider 完成以上三步 即可完成认证。
+ 具体的认证过程是在 SmsAuthenticationProvider 完成的 [通过定制 userDetailService 完成用户的认证流程]
+

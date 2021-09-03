@@ -1,6 +1,7 @@
 package com.imooc.core.validate.code;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
@@ -10,22 +11,20 @@ import java.time.LocalDateTime;
  * @date 2021/8/31 21:56
  **/
 @Data
-public class ImageCode {
+@EqualsAndHashCode(callSuper = true)
+public class ImageCode extends ValidateCode {
     private BufferedImage bufferedImage;
-    private String code;
-    private LocalDateTime expireTime;
 
     public ImageCode(BufferedImage bufferedImage, String code, int expire) {
+        super(code, expire);
         this.bufferedImage = bufferedImage;
-        this.code = code;
-        this.expireTime = LocalDateTime.now().plusSeconds(expire);
     }
 
-    public static boolean isExpired(LocalDateTime expireTime){
+    public static boolean isExpired(LocalDateTime expireTime) {
         return expireTime.isAfter(LocalDateTime.now());
     }
 
-    public boolean isExpired(){
+    public boolean isExpired() {
         return this.expireTime.isBefore(LocalDateTime.now());
     }
 }

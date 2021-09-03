@@ -21,7 +21,9 @@ import java.io.IOException;
 public class ValidateCodeController {
     private final SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
     public static final String SESSION_KEY = "IMAGE_CODE_SESSION_";
-    private final ValidateCodeGenerator imageCodeGenerator;
+    private final ImageCodeGenerator imageCodeGenerator;
+    private final SmsCodeGenerator smsCodeGenerator;
+    private final SmsCodeProcessor smsCodeProcessor;
 
     @GetMapping("/code/image")
     public void createImageCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -31,4 +33,11 @@ public class ValidateCodeController {
         ImageIO.write(imageCode.getBufferedImage(), "JPEG", response.getOutputStream());
     }
 
+    @GetMapping("/code/mobile")
+    public void createMobileCode(HttpServletRequest request, HttpServletResponse response) {
+        //生成的imageCode 放入session中
+        ValidateCode validateCode = smsCodeGenerator.generate(request);
+        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY, validateCode);
+        smsCodeProcessor.send(new ServletWebRequest(request, response), validateCode);
+    }
 }

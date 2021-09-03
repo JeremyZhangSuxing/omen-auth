@@ -7,6 +7,5 @@ import javax.servlet.ServletRequest;
  * @date : 2021/9/2 9:51 上午
  */
 public interface ValidateCodeGenerator {
-    ImageCode generate(ServletRequest request);
-
+    ValidateCode generate(ServletRequest request);
 }

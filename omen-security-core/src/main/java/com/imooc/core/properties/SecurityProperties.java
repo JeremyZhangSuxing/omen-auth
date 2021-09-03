@@ -12,4 +12,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SecurityProperties {
     private BrowserProperties browser = new BrowserProperties();
     private ImageCodeProperties image = new ImageCodeProperties();
+    private SmsCodeProperties sms = new SmsCodeProperties();
 }

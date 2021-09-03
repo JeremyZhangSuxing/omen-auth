@@ -74,7 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(securityProperties.getBrowser().getLoginPage(),
                         "/authentication/require",
-                        "/code/image").permitAll()
+                        "/code/image",
+                        "/code/sms").permitAll()
                 //认证请求
                 .anyRequest()
                 //都需要身份认证
