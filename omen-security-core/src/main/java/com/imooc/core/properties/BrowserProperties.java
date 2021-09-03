@@ -12,6 +12,8 @@ public class BrowserProperties {
 
     private LoginType loginType = LoginType.JSON;
 
+    private int rememberMe = 3600;
+
     public enum LoginType {
         JSON, REDIRECT;
     }

@@ -1,3 +1,11 @@
+使用username 和 password 登录时间 组件流程 userDetailService[从数据库获取用户密码 自定义封装 authentication]  DaoAuthenticationProvider[根据容器中配置的encoder 校验authentication]
+
 Authentication 对象 根据认证的方式不同，包含的信息也是不同的。
 一般表单的开发场景下，spring security 默认的登陆跳转的的方式很适配，当前的sap 的场景采取的以部ajax 方式来异步登录。
 OncePerRequestFilter 保证这个过滤期每次只会被调用一次
+
+代码为什么要重构: 这里体现了一个开发思想，就是以增量的方式与适应变化。就是说当需求、逻辑发生变动的时候，是增加代码，而不是去修改原先的代码
+
+rememberMe  主要是通过 RememberMeAuthenticationFilter 此处对于SecurityConfig 中出现的循环依赖的解决，笔者的编码习惯是构造的的方式导入bean，
+因此需要将此 bean 单独注入。
+
