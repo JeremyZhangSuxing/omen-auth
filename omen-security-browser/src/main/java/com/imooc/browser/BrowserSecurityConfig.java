@@ -5,7 +5,9 @@ import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
 import com.imooc.core.auth.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.ImageCodeGenerator;
-import com.imooc.core.validate.code.ValidateFilter;
+import com.imooc.core.validate.code.SmsCodeAuthenticationSecurityConfig;
+import com.imooc.core.validate.code.SmsValidateFilter;
+import com.imooc.core.validate.code.ValidateCodeFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,15 +29,15 @@ import javax.sql.DataSource;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(SecurityProperties.class)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityProperties securityProperties;
-//    private final ImoocAuthenticationSuccessHandler imoocAuthenticationSuccessHandler;
+    //    private final ImoocAuthenticationSuccessHandler imoocAuthenticationSuccessHandler;
     private final ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler;
     private final ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private final DataSource dataSource;
     private final UserDetailsService userDetailsService;
-
+    private final SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
 
     @Bean
     @ConditionalOnMissingBean(value = ImageCodeGenerator.class)
@@ -48,17 +50,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
         //启动的时候就初始化表，注意，就在第一次启动的时候执行，以后要注释掉
-//        tokenRepository.setCreateTableOnStartup(true);
+        //tokenRepository.setCreateTableOnStartup(true);
         return tokenRepository;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        ValidateFilter validateFilter = new ValidateFilter();
+        ValidateCodeFilter validateFilter = new ValidateCodeFilter();
         validateFilter.setImoocAuthenticationFailureHandler(imoocAuthenticationFailureHandler);
         validateFilter.setSecurityProperties(securityProperties);
+        //smsValidate filter config
+        SmsValidateFilter smsValidateFilter = new SmsValidateFilter();
+        smsValidateFilter.setImoocAuthenticationFailureHandler(imoocAuthenticationFailureHandler);
+        smsValidateFilter.setSecurityProperties(securityProperties);
+        smsValidateFilter.afterPropertiesSet();
+
         //设置认证方式
-        http.addFilterBefore(validateFilter, UsernamePasswordAuthenticationFilter.class)
+        http
+                .addFilterBefore(smsValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(validateFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
                 .loginPage("/authentication/require")
                 .loginProcessingUrl("/authentication/form")
@@ -82,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 //跨域配置
-                .csrf().disable();
+                .csrf().disable()
+                .apply(smsCodeAuthenticationSecurityConfig);
     }
 }

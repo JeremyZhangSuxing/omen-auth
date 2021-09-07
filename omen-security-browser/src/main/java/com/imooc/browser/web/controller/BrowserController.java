@@ -33,13 +33,15 @@ public class BrowserController {
 
     @RequestMapping("/authentication/require")
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
-    //返回401状态码，表示未授权
     public SimpleResponse requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //返回401状态码，表示未授权
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (savedRequest != null) {
-            String target = savedRequest.getRedirectUrl();//引发跳转的url
+            String target = savedRequest.getRedirectUrl();
+            //引发跳转的url
             log.info("引发跳转的URL：{}", target);
-            if (StringUtils.endsWithIgnoreCase(target, ".html")) {//如果引发跳转的url后缀为html，则跳转到html登陆页面
+            if (StringUtils.endsWithIgnoreCase(target, ".html")) {
+                //如果引发跳转的url后缀为html，则跳转到html登陆页面
                 //跳转到自定义配置的登陆页面
                 redirectStrategy.sendRedirect(request, response, securityProperties.getBrowser().getLoginPage());
             }

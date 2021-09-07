@@ -1,5 +1,6 @@
 package com.imooc.core.validate.code;
 
+import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import java.util.Objects;
  * @author suxing.zhang
  * @date 2021/9/2 21:57
  **/
+@Setter
 public class SmsAuthenticationProvider implements AuthenticationProvider {
 
     private UserDetailsService userDetailsService;

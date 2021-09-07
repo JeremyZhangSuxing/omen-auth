@@ -39,7 +39,7 @@ public class ImageCodeGenerator implements ValidateCodeGenerator, InitializingBe
         }
         String sRand = "";
         //验证码的长度
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < securityProperties.getSms().getLength(); i++) {
             String rand = String.valueOf(random.nextInt(10));
             sRand += rand;
             g.setColor(new Color(20 + random.nextInt(110), 20 + random.nextInt(110), 20 + random.nextInt(110)));

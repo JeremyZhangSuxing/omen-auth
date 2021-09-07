@@ -29,7 +29,7 @@ import java.io.IOException;
 @Slf4j
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ValidateFilter extends OncePerRequestFilter {
+public class ValidateCodeFilter extends OncePerRequestFilter {
     private ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
     private AntPathMatcher antPathMatcher = new AntPathMatcher();

@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.awt.image.BufferedImage;
-import java.time.LocalDateTime;
 
 /**
  * @author suxing.zhang
@@ -18,13 +17,5 @@ public class ImageCode extends ValidateCode {
     public ImageCode(BufferedImage bufferedImage, String code, int expire) {
         super(code, expire);
         this.bufferedImage = bufferedImage;
-    }
-
-    public static boolean isExpired(LocalDateTime expireTime) {
-        return expireTime.isAfter(LocalDateTime.now());
-    }
-
-    public boolean isExpired() {
-        return this.expireTime.isBefore(LocalDateTime.now());
     }
 }

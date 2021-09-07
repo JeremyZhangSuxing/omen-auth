@@ -23,7 +23,7 @@ public class SmsAuthenticationFilter extends AbstractAuthenticationProcessingFil
     private boolean postOnly = true;
 
     public SmsAuthenticationFilter() {
-        super(new AntPathRequestMatcher("/login", "POST"));
+        super(new AntPathRequestMatcher("/authentication/mobile", "POST"));
     }
 
 
