@@ -1,5 +1,7 @@
 package com.imooc.core.validate.code;
 
+import com.imooc.core.validate.code.model.ValidateCode;
+
 import javax.servlet.ServletRequest;
 
 /**

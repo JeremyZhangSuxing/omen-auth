@@ -1,6 +1,7 @@
 package com.imooc.core.validate.code;
 
 import com.imooc.core.properties.SecurityProperties;
+import com.imooc.core.validate.code.model.ImageCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.bind.ServletRequestUtils;

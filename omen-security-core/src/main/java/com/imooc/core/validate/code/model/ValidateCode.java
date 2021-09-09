@@ -1,4 +1,4 @@
-package com.imooc.core.validate.code;
+package com.imooc.core.validate.code.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class ValidateCode {
         this.expireTime = LocalDateTime.now().plusSeconds(expire);
     }
 
-    protected boolean isExpired() {
+    public boolean isExpired() {
         return this.expireTime.isBefore(LocalDateTime.now());
     }
 

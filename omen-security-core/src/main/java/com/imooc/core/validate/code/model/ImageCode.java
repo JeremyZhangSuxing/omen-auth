@@ -1,4 +1,4 @@
-package com.imooc.core.validate.code;
+package com.imooc.core.validate.code.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,6 +1,7 @@
 package com.imooc.core.validate.code;
 
 import com.imooc.core.properties.SecurityProperties;
+import com.imooc.core.validate.code.model.ValidateCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.stereotype.Component;

@@ -1,5 +1,7 @@
 package com.imooc.core.validate.code;
 
+import com.imooc.core.validate.code.model.ImageCode;
+import com.imooc.core.validate.code.model.ValidateCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;

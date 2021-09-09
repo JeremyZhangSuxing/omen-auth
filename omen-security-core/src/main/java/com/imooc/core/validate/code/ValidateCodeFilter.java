@@ -2,11 +2,11 @@ package com.imooc.core.validate.code;
 
 import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
 import com.imooc.core.properties.SecurityProperties;
+import com.imooc.core.validate.code.model.ImageCode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.util.AntPathMatcher;
@@ -57,22 +57,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
     }
 
     private void validateCode(ServletWebRequest request) throws ServletRequestBindingException {
-        //从当前的请求中获取到验证码信息
-        ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(request, ValidateCodeController.SESSION_KEY);
-        String codeRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "imageCode");
 
-        if (StringUtils.isBlank(codeRequest)) {
-            throw new ValidateCodeException("验证码不能为空");
-        }
-        if (null == codeInSession) {
-            throw new ValidateCodeException("验证码信息不存在");
-        }
-        if (codeInSession.isExpired()) {
-            throw new ValidateCodeException("验证码已经过期");
-        }
-        if (!StringUtils.equals(codeRequest, codeInSession.getCode())) {
-            throw new ValidateCodeException("输入的验证码不正确");
-        }
     }
 
     private boolean shouldBeValidate(String requestUrl) {

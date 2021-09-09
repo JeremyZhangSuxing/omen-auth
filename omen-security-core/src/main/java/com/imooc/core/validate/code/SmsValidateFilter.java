@@ -6,13 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -65,24 +63,7 @@ public class SmsValidateFilter extends OncePerRequestFilter implements Initializ
     }
 
     private void validateCode(ServletWebRequest request) throws ServletRequestBindingException {
-        //从当前的请求中获取到验证码信息
-        ValidateCode codeInSession = (ValidateCode) sessionStrategy.getAttribute(request, ValidateCodeController.SESSION_KEY + "SMS");
-        String codeRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "smsCode");
 
-        if (StringUtils.isBlank(codeRequest)) {
-            throw new ValidateCodeException("验证码不能为空");
-        }
-        if (null == codeInSession) {
-            throw new ValidateCodeException("验证码信息不存在");
-        }
-        if (codeInSession.isExpired()) {
-            sessionStrategy.removeAttribute(request, ValidateCodeController.SESSION_KEY + "SMS");
-            throw new ValidateCodeException("验证码已经过期");
-        }
-        if (!StringUtils.equals(codeRequest, codeInSession.getCode())) {
-            throw new ValidateCodeException("输入的验证码不正确");
-        }
-        sessionStrategy.removeAttribute(request, ValidateCodeController.SESSION_KEY + "SMS");
     }
 
     private boolean shouldBeValidate(String requestUrl) {

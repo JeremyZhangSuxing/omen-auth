@@ -1,5 +1,6 @@
 package com.imooc.core.validate.code;
 
+import com.imooc.core.validate.code.model.ValidateCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
