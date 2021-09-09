@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
  * @author suxing.zhang
  * @date 2021/9/2 21:59
  **/
-
 public class SmsAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public static final String SPRING_SECURITY_FORM_MOBILE = "mobile";

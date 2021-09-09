@@ -41,9 +41,7 @@ public class SmsValidateFilter extends OncePerRequestFilter implements Initializ
 
     @Override
     public void afterPropertiesSet() {
-        for (String url : securityProperties.getSms().getUrl()) {
-            urls.add(url);
-        }
+        urls.addAll(securityProperties.getSms().getUrl());
         urls.add("/authentication/mobile");
     }
 
