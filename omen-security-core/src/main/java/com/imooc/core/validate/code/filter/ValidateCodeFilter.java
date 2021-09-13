@@ -37,6 +37,13 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     private final SecurityProperties securityProperties;
     private final Map<String, ValidateType> urlMap = new HashMap<>(16);
 
+
+    /**
+     * 图像验证码代码优化
+     * 验证码的基本参数可配：图片大小、验证码长度、验证码有效时间
+     * 验证码拦截的接口可配置：即哪些接口需要执行验证码的拦截逻辑
+     * 验证码的生成逻辑可配
+     */
     @Override
     public void afterPropertiesSet() {
         urlMap.put(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM, ValidateType.IMAGE);

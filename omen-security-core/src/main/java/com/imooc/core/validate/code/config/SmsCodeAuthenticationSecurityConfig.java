@@ -1,5 +1,7 @@
-package com.imooc.core.validate.code;
+package com.imooc.core.validate.code.config;
 
+import com.imooc.core.validate.code.SmsAuthenticationFilter;
+import com.imooc.core.validate.code.SmsAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;

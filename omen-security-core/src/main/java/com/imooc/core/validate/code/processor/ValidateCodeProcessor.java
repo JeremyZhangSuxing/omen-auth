@@ -10,8 +10,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 public interface ValidateCodeProcessor {
     /**
      * 收敛校验逻辑
-     *
-     * @param servletWebRequest 封装请求和响应
+     * @param servletWebRequest asd
+     * @throws ServletRequestBindingException sad
      */
     void validate(ServletWebRequest servletWebRequest) throws ServletRequestBindingException;
 }

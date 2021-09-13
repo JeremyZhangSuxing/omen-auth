@@ -3,20 +3,20 @@ package com.imooc.browser;
 
 import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
 import com.imooc.core.auth.ImoocAuthenticationSuccessProHandler;
+import com.imooc.core.auth.config.AbstractChannelSecurityConfig;
 import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.ImageCodeGenerator;
-import com.imooc.core.validate.code.SmsCodeAuthenticationSecurityConfig;
-import com.imooc.core.validate.code.SmsValidateFilter;
-import com.imooc.core.validate.code.ValidateCodeFilter;
-import lombok.RequiredArgsConstructor;
+import com.imooc.core.validate.code.config.SmsCodeAuthenticationSecurityConfig;
+import com.imooc.core.validate.code.config.ValidateCodeSecurityConfig;
+import com.imooc.core.validate.code.filter.ValidateCodeFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -27,17 +27,39 @@ import javax.sql.DataSource;
  * @date : 2021/8/30 9:55 上午
  */
 @Configuration
-@RequiredArgsConstructor
 @EnableConfigurationProperties(SecurityProperties.class)
-public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+public class BrowserSecurityConfig extends AbstractChannelSecurityConfig {
 
     private final SecurityProperties securityProperties;
-    //    private final ImoocAuthenticationSuccessHandler imoocAuthenticationSuccessHandler;
     private final ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler;
     private final ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private final DataSource dataSource;
     private final UserDetailsService userDetailsService;
     private final SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
+    private final ValidateCodeFilter validateCodeFilter;
+    private final ValidateCodeSecurityConfig validateCodeSecurityConfig;
+
+    @Autowired
+    public BrowserSecurityConfig(SecurityProperties securityProperties,
+                                 ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler,
+                                 ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler,
+                                 ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler1,
+                                 ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler1,
+                                 @Qualifier("dataSource") DataSource dataSource,
+                                 UserDetailsService userDetailsService,
+                                 SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig,
+                                 ValidateCodeFilter validateCodeFilter,
+                                 ValidateCodeSecurityConfig validateCodeSecurityConfig) {
+        super(imoocAuthenticationSuccessProHandler, imoocAuthenticationFailureHandler);
+        this.securityProperties = securityProperties;
+        this.imoocAuthenticationSuccessProHandler = imoocAuthenticationSuccessProHandler1;
+        this.imoocAuthenticationFailureHandler = imoocAuthenticationFailureHandler1;
+        this.dataSource = dataSource;
+        this.userDetailsService = userDetailsService;
+        this.smsCodeAuthenticationSecurityConfig = smsCodeAuthenticationSecurityConfig;
+        this.validateCodeFilter = validateCodeFilter;
+        this.validateCodeSecurityConfig = validateCodeSecurityConfig;
+    }
 
     @Bean
     @ConditionalOnMissingBean(value = ImageCodeGenerator.class)
@@ -56,24 +78,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        ValidateCodeFilter validateFilter = new ValidateCodeFilter();
-        validateFilter.setImoocAuthenticationFailureHandler(imoocAuthenticationFailureHandler);
-        validateFilter.setSecurityProperties(securityProperties);
-        //smsValidate filter config
-        SmsValidateFilter smsValidateFilter = new SmsValidateFilter();
-        smsValidateFilter.setImoocAuthenticationFailureHandler(imoocAuthenticationFailureHandler);
-        smsValidateFilter.setSecurityProperties(securityProperties);
-        smsValidateFilter.afterPropertiesSet();
-
-        //设置认证方式
-        http
-                .addFilterBefore(smsValidateFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(validateFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin()
-                .loginPage("/authentication/require")
-                .loginProcessingUrl("/authentication/form")
-                .successHandler(imoocAuthenticationSuccessProHandler)
-                .failureHandler(imoocAuthenticationFailureHandler)
+        //form login 提取出来
+        applyPasswordAuthenticationConfig(http);
+        //加上验证码拦截器在username password filter 前面
+        http.apply(validateCodeSecurityConfig)
                 .and()
                 .rememberMe()
                 .tokenRepository(persistentTokenRepository())
