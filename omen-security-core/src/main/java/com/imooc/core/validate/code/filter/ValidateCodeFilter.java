@@ -9,8 +9,11 @@ import com.imooc.core.validate.code.support.ValidateType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,7 +39,10 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     private final ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private final SecurityProperties securityProperties;
     private final Map<String, ValidateType> urlMap = new HashMap<>(16);
-
+    /**
+     * 验证请求url与配置的url是否匹配的工具类
+     */
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
 
     /**
      * 图像验证码代码优化
@@ -55,17 +61,20 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (shouldBeValidate(request.getRequestURI())) {
-            ValidateType validateType = urlMap.get(request.getRequestURI());
+        ValidateType type = getValidateCodeType(request);
+        if (type != null) {
+            logger.info("校验请求(" + request.getRequestURI() + ")中的验证码,验证码类型" + type);
             try {
-                validateProcessorHolder.findValidateProcessor(validateType)
+                validateProcessorHolder.findValidateProcessor(type)
                         .validate(new ServletWebRequest(request, response));
-            } catch (ValidateCodeException e) {
-                log.error(" {}  校验类型 >>> 验证码校验失败 {} ", validateType, e);
-                imoocAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                logger.info("验证码校验通过");
+            } catch (ValidateCodeException exception) {
+                imoocAuthenticationFailureHandler.onAuthenticationFailure(request, response, exception);
+                return;
             }
-            filterChain.doFilter(request, response);
         }
+        filterChain.doFilter(request, response);
+
     }
 
     private synchronized void addUrl(Set<String> urls, ValidateType validateType) {
@@ -76,7 +85,23 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
         }
     }
 
-    private boolean shouldBeValidate(String requestUrl) {
-        return urlMap.containsKey(requestUrl);
+
+    /**
+     * 获取校验码的类型，如果当前请求不需要校验，则返回null
+     *
+     * @param request
+     * @return
+     */
+    private ValidateType getValidateCodeType(HttpServletRequest request) {
+        ValidateType result = null;
+        if (!StringUtils.equalsIgnoreCase(request.getMethod(), HttpMethod.GET.name())) {
+            Set<String> urls = urlMap.keySet();
+            for (String url : urls) {
+                if (pathMatcher.match(url, request.getRequestURI())) {
+                    result = urlMap.get(url);
+                }
+            }
+        }
+        return result;
     }
 }
