@@ -8,7 +8,6 @@ import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.ImageCodeGenerator;
 import com.imooc.core.validate.code.config.SmsCodeAuthenticationSecurityConfig;
 import com.imooc.core.validate.code.config.ValidateCodeSecurityConfig;
-import com.imooc.core.validate.code.filter.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.sql.DataSource;
 
@@ -31,34 +31,28 @@ import javax.sql.DataSource;
 public class BrowserSecurityConfig extends AbstractChannelSecurityConfig {
 
     private final SecurityProperties securityProperties;
-    private final ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler;
-    private final ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
     private final DataSource dataSource;
     private final UserDetailsService userDetailsService;
     private final SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
-    private final ValidateCodeFilter validateCodeFilter;
     private final ValidateCodeSecurityConfig validateCodeSecurityConfig;
+    private final SpringSocialConfigurer imoocSocialSecurityConfig;
 
     @Autowired
     public BrowserSecurityConfig(SecurityProperties securityProperties,
                                  ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler,
                                  ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler,
-                                 ImoocAuthenticationSuccessProHandler imoocAuthenticationSuccessProHandler1,
-                                 ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler1,
                                  @Qualifier("dataSource") DataSource dataSource,
                                  UserDetailsService userDetailsService,
                                  SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig,
-                                 ValidateCodeFilter validateCodeFilter,
-                                 ValidateCodeSecurityConfig validateCodeSecurityConfig) {
+                                 ValidateCodeSecurityConfig validateCodeSecurityConfig,
+                                 SpringSocialConfigurer imoocSocialSecurityConfig) {
         super(imoocAuthenticationSuccessProHandler, imoocAuthenticationFailureHandler);
         this.securityProperties = securityProperties;
-        this.imoocAuthenticationSuccessProHandler = imoocAuthenticationSuccessProHandler1;
-        this.imoocAuthenticationFailureHandler = imoocAuthenticationFailureHandler1;
         this.dataSource = dataSource;
         this.userDetailsService = userDetailsService;
         this.smsCodeAuthenticationSecurityConfig = smsCodeAuthenticationSecurityConfig;
-        this.validateCodeFilter = validateCodeFilter;
         this.validateCodeSecurityConfig = validateCodeSecurityConfig;
+        this.imoocSocialSecurityConfig = imoocSocialSecurityConfig;
     }
 
     @Bean
@@ -87,7 +81,11 @@ public class BrowserSecurityConfig extends AbstractChannelSecurityConfig {
                 .tokenRepository(persistentTokenRepository())
                 .tokenValiditySeconds(securityProperties.getBrowser().getRememberMe())
                 .userDetailsService(userDetailsService)
-                .and()
+                    .and()
+                .apply(imoocSocialSecurityConfig)
+                    .and()
+                .apply(smsCodeAuthenticationSecurityConfig)
+                    .and()
                 //对请求进行授权
                 .authorizeRequests()
                 .antMatchers(securityProperties.getBrowser().getLoginPage(),
@@ -98,9 +96,8 @@ public class BrowserSecurityConfig extends AbstractChannelSecurityConfig {
                 .anyRequest()
                 //都需要身份认证
                 .authenticated()
-                .and()
+                    .and()
                 //跨域配置
-                .csrf().disable()
-                .apply(smsCodeAuthenticationSecurityConfig);
+                .csrf().disable();
     }
 }

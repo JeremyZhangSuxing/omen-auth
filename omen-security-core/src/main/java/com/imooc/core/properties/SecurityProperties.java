@@ -13,4 +13,5 @@ public class SecurityProperties {
     private BrowserProperties browser = new BrowserProperties();
     private ImageCodeProperties image = new ImageCodeProperties();
     private SmsCodeProperties sms = new SmsCodeProperties();
+    private CommonSocialProperties social = new CommonSocialProperties();
 }

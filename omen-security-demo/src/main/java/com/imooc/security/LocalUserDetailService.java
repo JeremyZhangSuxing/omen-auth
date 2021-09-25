@@ -1,4 +1,4 @@
-package com.imooc.browser;
+package com.imooc.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.social.security.SocialUser;
+import org.springframework.social.security.SocialUserDetails;
+import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LocalUserDetailService implements UserDetailsService {
+public class LocalUserDetailService implements UserDetailsService, SocialUserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private static final String PASSWORD = "123456";
 
@@ -29,4 +32,13 @@ public class LocalUserDetailService implements UserDetailsService {
                 //权限
                 AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
     }
+
+    @Override
+    public SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException {
+        log.info("username  -----> {}", userId);
+        return new SocialUser(userId, passwordEncoder.encode(PASSWORD),
+                //权限
+                AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
+    }
+
 }

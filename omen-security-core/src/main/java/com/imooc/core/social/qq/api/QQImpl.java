@@ -8,8 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 import org.springframework.social.oauth2.TokenStrategy;
 
-import java.io.IOException;
-
 /**
  * @author : Knight
  * @date : 2021/9/22 9:09 下午
@@ -18,9 +16,9 @@ import java.io.IOException;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class QQImpl extends AbstractOAuth2ApiBinding implements QQ {
-
+    //todo 补全地址
     private static final String URL_GET_OPENID = "";
-    private static final String URL_GET_USERINFO = "";
+    private static final String URL_GET_USER_INFO = "";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private String appId;
@@ -28,12 +26,12 @@ public class QQImpl extends AbstractOAuth2ApiBinding implements QQ {
 
     @Override
     public QQUserInfo getUserInfo() {
-        String userInfo = getRestTemplate().getForObject(URL_GET_USERINFO, String.class);
+        String userInfo = getRestTemplate().getForObject(URL_GET_USER_INFO, String.class);
         log.info("获取到的用户信息 >>>>>> {}", userInfo);
         try {
             return objectMapper.readValue(userInfo, QQUserInfo.class);
-        } catch (IOException e) {
-            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("获取qq用户信息失败！！！");
         }
 
     }
