@@ -1,5 +1,6 @@
 package com.imooc.core.social;
 
+import com.imooc.core.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,9 @@ public class SocialConfiguration extends SocialConfigurerAdapter {
     @Autowired(required = false)
     private DataSource dataSource;
 
+    @Autowired
+    private SecurityProperties securityProperties;
+
     /**
      * 演示使用明文
      */
@@ -41,7 +45,7 @@ public class SocialConfiguration extends SocialConfigurerAdapter {
      * /auth/qq  /auth 默认拦截请求  /providerId
      */
     @Bean
-    public SpringSocialConfigurer imoocSocialSecurityConfig(){
-        return new SpringSocialConfigurer();
+    public SpringSocialConfigurer imoocSocialSecurityConfig() {
+        return new ImoocSpringSocialConfigurer(securityProperties.getSocial().getProcessUrl());
     }
 }

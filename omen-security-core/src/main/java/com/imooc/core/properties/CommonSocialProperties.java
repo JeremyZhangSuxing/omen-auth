@@ -9,4 +9,6 @@ import lombok.Data;
 @Data
 public class CommonSocialProperties {
     private QQProperties qq = new QQProperties();
+    private String processUrl = "/auth";
+
 }
