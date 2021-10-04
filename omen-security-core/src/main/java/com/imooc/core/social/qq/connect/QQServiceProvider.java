@@ -13,7 +13,7 @@ import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
  */
 public class QQServiceProvider extends AbstractOAuth2ServiceProvider<QQ> {
 
-    private String appId;
+    private final String appId;
     /**
      * 流程中的第一步：导向认证服务器的url
      */

@@ -1,6 +1,7 @@
 package com.imooc.browser.web.controller;
 
 import com.imooc.browser.web.controller.support.SimpleResponse;
+import com.imooc.browser.web.controller.support.SocialUserInfo;
 import com.imooc.core.properties.SecurityProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +12,13 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.web.ProviderSignInUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +35,7 @@ public class BrowserController {
     private final RequestCache requestCache = new HttpSessionRequestCache();
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private final SecurityProperties securityProperties;
+    private final ProviderSignInUtils providerSignInUtils;
 
     @RequestMapping("/authentication/require")
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
@@ -47,6 +53,17 @@ public class BrowserController {
             }
         }
         return new SimpleResponse("访问的服务需要身份认证");
+    }
+
+    @GetMapping("/social/user")
+    public SocialUserInfo getSocialUserInfo(HttpServletRequest request) {
+        Connection<?> connection = providerSignInUtils.getConnectionFromSession(new ServletWebRequest(request));
+        return SocialUserInfo.builder()
+                .headImage(connection.getImageUrl())
+                .nickname(connection.getDisplayName())
+                .openId(connection.getKey().getProviderUserId())
+                .providerId(connection.getKey().getProviderId())
+                .build();
     }
 
 }

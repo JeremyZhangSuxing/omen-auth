@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class BrowserProperties {
     private String loginPage = "/imooc-signIn.html";
-
+    private String sinUpUrl = "/imooc-signUp.html";
     private LoginType loginType = LoginType.JSON;
 
     private int rememberMe = 3600;
