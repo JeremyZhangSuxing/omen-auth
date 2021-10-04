@@ -20,9 +20,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.omen.learning</groupId>-->
+<!--            <artifactId>omen-security-browser</artifactId>-->
+<!--            <version>${omen.security.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.omen.learning</groupId>
-            <artifactId>omen-security-browser</artifactId>
+            <artifactId>omen-security-app</artifactId>
             <version>${omen.security.version}</version>
         </dependency>
     </dependencies>

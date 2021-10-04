@@ -1,7 +1,6 @@
 package com.imooc;
 
-import com.imooc.browser.BrowserSecurityConfig;
-import com.imooc.browser.web.controller.BrowserController;
+import com.imooc.core.properties.SecurityProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@SpringBootApplication(scanBasePackageClasses = {BrowserSecurityConfig.class, DemoApplication.class})
+@SpringBootApplication
 public class DemoApplication {
+
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(DemoApplication.class, args);
-        log.info("DemoApplication  < ------ >  {}", run.getBean(BrowserController.class));
+        SecurityProperties bean = run.getBean(SecurityProperties.class);
+        System.out.println(bean);
     }
 
     @GetMapping("/hello")

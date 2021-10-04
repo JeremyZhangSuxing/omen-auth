@@ -4,6 +4,7 @@ import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.model.ImageCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.ServletRequest;
@@ -16,6 +17,7 @@ import java.util.Random;
  * @author : Knight
  * @date : 2021/9/2 9:54 上午
  */
+@Component
 @RequiredArgsConstructor
 public class ImageCodeGenerator implements ValidateCodeGenerator, InitializingBean {
     private final SecurityProperties securityProperties;
