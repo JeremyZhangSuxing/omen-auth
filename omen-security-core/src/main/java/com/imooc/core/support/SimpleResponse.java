@@ -1,4 +1,4 @@
-package com.imooc.browser.web.controller.support;
+package com.imooc.core.support;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

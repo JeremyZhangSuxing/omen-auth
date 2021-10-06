@@ -1,9 +1,8 @@
 package com.imooc.browser;
 
 
-import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
-import com.imooc.core.auth.ImoocAuthenticationSuccessProHandler;
-import com.imooc.core.auth.config.AbstractChannelSecurityConfig;
+import com.imooc.browser.authentication.ImoocAuthenticationFailureHandler;
+import com.imooc.browser.authentication.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.ImageCodeGenerator;
 import com.imooc.core.validate.code.config.SmsCodeAuthenticationSecurityConfig;

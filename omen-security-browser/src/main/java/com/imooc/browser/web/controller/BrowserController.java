@@ -1,6 +1,6 @@
 package com.imooc.browser.web.controller;
 
-import com.imooc.browser.web.controller.support.SimpleResponse;
+import com.imooc.core.support.SimpleResponse;
 import com.imooc.browser.web.controller.support.SocialUserInfo;
 import com.imooc.core.properties.SecurityProperties;
 import lombok.RequiredArgsConstructor;

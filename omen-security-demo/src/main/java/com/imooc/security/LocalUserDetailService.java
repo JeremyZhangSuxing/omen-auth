@@ -3,7 +3,6 @@ package com.imooc.security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,17 +27,23 @@ public class LocalUserDetailService implements UserDetailsService, SocialUserDet
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //真实的业务系统中可以去数据库获取用户信息 如密码和权限
         log.info("username  -----> {}", username);
-        return new User(username, passwordEncoder.encode(PASSWORD),
-                //权限
-                AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
+        return buildUser(username);
     }
 
     @Override
     public SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException {
         log.info("username  -----> {}", userId);
-        return new SocialUser(userId, passwordEncoder.encode(PASSWORD),
-                //权限
-                AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
+        return buildUser(userId);
     }
 
+    private SocialUserDetails buildUser(String userId) {
+        // 根据用户名查找用户信息
+        //根据查找到的用户信息判断用户是否被冻结
+        String password = passwordEncoder.encode("123456");
+        log.info("数据库密码是:" + password);
+
+        return new SocialUser(userId, password,
+                true, true, true, true,
+                AuthorityUtils.commaSeparatedStringToAuthorityList("admin,ROLE_USER"));
+    }
 }

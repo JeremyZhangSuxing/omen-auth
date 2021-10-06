@@ -1,7 +1,8 @@
-package com.imooc.core.auth.config;
+package com.imooc.browser;
 
-import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
-import com.imooc.core.auth.ImoocAuthenticationSuccessProHandler;
+
+import com.imooc.browser.authentication.ImoocAuthenticationFailureHandler;
+import com.imooc.browser.authentication.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.validate.code.SecurityConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

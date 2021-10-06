@@ -1,6 +1,6 @@
 //package com.imooc.core.validate.code;
 //
-//import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
+//import com.imooc.browser.authentication.ImoocAuthenticationFailureHandler;
 //import com.imooc.core.properties.SecurityProperties;
 //import com.imooc.core.validate.code.model.ImageCode;
 //import lombok.Data;

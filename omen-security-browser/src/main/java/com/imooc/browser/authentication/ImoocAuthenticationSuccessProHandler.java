@@ -1,4 +1,4 @@
-package com.imooc.core.auth;
+package com.imooc.browser.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imooc.core.properties.BrowserProperties;

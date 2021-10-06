@@ -1,6 +1,5 @@
 package com.imooc.core.validate.code.filter;
 
-import com.imooc.core.auth.ImoocAuthenticationFailureHandler;
 import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.SecurityConstants;
 import com.imooc.core.validate.code.ValidateCodeException;
@@ -12,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -36,7 +36,8 @@ import java.util.Set;
 public class ValidateCodeFilter extends OncePerRequestFilter implements InitializingBean {
 
     private final ValidateProcessorHolder validateProcessorHolder;
-    private final ImoocAuthenticationFailureHandler imoocAuthenticationFailureHandler;
+    // 为何替换成默认的处理器？？？
+    private final AuthenticationFailureHandler authenticationFailureHandler;
     private final SecurityProperties securityProperties;
     private final Map<String, ValidateType> urlMap = new HashMap<>(16);
     /**
@@ -69,7 +70,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
                         .validate(new ServletWebRequest(request, response));
                 logger.info("验证码校验通过");
             } catch (ValidateCodeException exception) {
-                imoocAuthenticationFailureHandler.onAuthenticationFailure(request, response, exception);
+                authenticationFailureHandler.onAuthenticationFailure(request, response, exception);
                 return;
             }
         }
