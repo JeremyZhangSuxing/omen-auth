@@ -5,6 +5,7 @@ import com.imooc.app.authentocation.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.SecurityConstants;
 import com.imooc.core.validate.code.config.SmsCodeAuthenticationSecurityConfig;
+import com.imooc.core.validate.code.config.ValidateCodeSecurityConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,12 +26,16 @@ public class ImoocResourceServerConfig extends ResourceServerConfigurerAdapter {
     private final SecurityProperties securityProperties;
     private final SpringSocialConfigurer imoocSocialSecurityConfig;
     private final SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
+    private final ValidateCodeSecurityConfig validateCodeSecurityConfig;
+
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
 
         //form login 提取出来
-        http.formLogin()
+        http.apply(validateCodeSecurityConfig)
+                .and()
+                .formLogin()
                 .loginPage(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM)
                 .loginProcessingUrl(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM)
                 .successHandler(imoocAuthenticationSuccessProHandler)

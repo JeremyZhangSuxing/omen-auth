@@ -12,9 +12,9 @@ import javax.servlet.ServletRequest;
  * @author : Knight
  * @date : 2021/9/3 11:16 上午
  */
-@Component("smsCodeGenerator")
+@Component("smsValidateCodeGenerator")
 @RequiredArgsConstructor
-public class SmsCodeGenerator implements ValidateCodeGenerator {
+public class SmsValidateCodeGenerator implements ValidateCodeGenerator<ValidateCode> {
     private final SecurityProperties securityProperties;
 
     @Override

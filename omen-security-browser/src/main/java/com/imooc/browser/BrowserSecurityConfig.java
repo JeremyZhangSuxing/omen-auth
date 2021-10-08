@@ -4,7 +4,7 @@ package com.imooc.browser;
 import com.imooc.browser.authentication.ImoocAuthenticationFailureHandler;
 import com.imooc.browser.authentication.ImoocAuthenticationSuccessProHandler;
 import com.imooc.core.properties.SecurityProperties;
-import com.imooc.core.validate.code.ImageCodeGenerator;
+import com.imooc.core.validate.code.ImageValidateCodeGenerator;
 import com.imooc.core.validate.code.config.SmsCodeAuthenticationSecurityConfig;
 import com.imooc.core.validate.code.config.ValidateCodeSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +53,9 @@ public class BrowserSecurityConfig extends AbstractChannelSecurityConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(value = ImageCodeGenerator.class)
-    public ImageCodeGenerator imageCodeGenerator() {
-        return new ImageCodeGenerator(securityProperties);
+    @ConditionalOnMissingBean(value = ImageValidateCodeGenerator.class)
+    public ImageValidateCodeGenerator imageValidateCodeGenerator() {
+        return new ImageValidateCodeGenerator(securityProperties);
     }
 
     @Bean

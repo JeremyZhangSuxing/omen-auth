@@ -8,6 +8,6 @@ import javax.servlet.ServletRequest;
  * @author : Knight
  * @date : 2021/9/2 9:51 上午
  */
-public interface ValidateCodeGenerator {
-    ValidateCode generate(ServletRequest request);
+public interface ValidateCodeGenerator<C extends ValidateCode> {
+    C generate(ServletRequest request);
 }

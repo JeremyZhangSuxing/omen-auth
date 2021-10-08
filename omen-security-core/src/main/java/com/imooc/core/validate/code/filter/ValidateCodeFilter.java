@@ -4,7 +4,7 @@ import com.imooc.core.properties.SecurityProperties;
 import com.imooc.core.validate.code.SecurityConstants;
 import com.imooc.core.validate.code.ValidateCodeException;
 import com.imooc.core.validate.code.support.ValidateProcessorHolder;
-import com.imooc.core.validate.code.support.ValidateType;
+import com.imooc.core.validate.code.support.ValidateCodeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -39,7 +39,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     // 为何替换成默认的处理器？？？
     private final AuthenticationFailureHandler authenticationFailureHandler;
     private final SecurityProperties securityProperties;
-    private final Map<String, ValidateType> urlMap = new HashMap<>(16);
+    private final Map<String, ValidateCodeType> urlMap = new HashMap<>(16);
     /**
      * 验证请求url与配置的url是否匹配的工具类
      */
@@ -53,16 +53,16 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
      */
     @Override
     public void afterPropertiesSet() {
-        urlMap.put(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM, ValidateType.IMAGE);
-        addUrl(securityProperties.getImage().getUrls(), ValidateType.IMAGE);
+        urlMap.put(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM, ValidateCodeType.IMAGE);
+        addUrl(securityProperties.getImage().getUrls(), ValidateCodeType.IMAGE);
 
-        urlMap.put(SecurityConstants.DEFAULT_SIGN_IN_PROCESSING_URL_MOBILE, ValidateType.SMS);
-        addUrl(securityProperties.getSms().getUrl(), ValidateType.SMS);
+        urlMap.put(SecurityConstants.DEFAULT_SIGN_IN_PROCESSING_URL_MOBILE, ValidateCodeType.SMS);
+        addUrl(securityProperties.getSms().getUrl(), ValidateCodeType.SMS);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        ValidateType type = getValidateCodeType(request);
+        ValidateCodeType type = getValidateCodeType(request);
         if (type != null) {
             logger.info("校验请求(" + request.getRequestURI() + ")中的验证码,验证码类型" + type);
             try {
@@ -78,7 +78,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
 
     }
 
-    private synchronized void addUrl(Set<String> urls, ValidateType validateType) {
+    private synchronized void addUrl(Set<String> urls, ValidateCodeType validateType) {
         if (CollectionUtils.isNotEmpty(urls)) {
             for (String url : urls) {
                 urlMap.put(url, validateType);
@@ -93,8 +93,8 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
      * @param request
      * @return
      */
-    private ValidateType getValidateCodeType(HttpServletRequest request) {
-        ValidateType result = null;
+    private ValidateCodeType getValidateCodeType(HttpServletRequest request) {
+        ValidateCodeType result = null;
         if (!StringUtils.equalsIgnoreCase(request.getMethod(), HttpMethod.GET.name())) {
             Set<String> urls = urlMap.keySet();
             for (String url : urls) {

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValidateCode {
+public class ValidateCode implements Serializable {
+
     protected String code;
     protected LocalDateTime expireTime;
 
@@ -21,6 +23,7 @@ public class ValidateCode {
         this.code = code;
         this.expireTime = LocalDateTime.now().plusSeconds(expire);
     }
+
 
     public boolean isExpired() {
         return this.expireTime.isBefore(LocalDateTime.now());

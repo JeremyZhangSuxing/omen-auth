@@ -3,10 +3,11 @@ package com.imooc.core.validate.code.support;
 import com.imooc.core.validate.code.processor.ValidateCodeProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -19,20 +20,25 @@ import java.util.Map;
 public class ValidateProcessorHolder implements InitializingBean {
     private final Map<String, ValidateCodeProcessor> validateCodeProcessorMap;
 
-    private final Map<ValidateType, ValidateCodeProcessor> map = new HashMap<>();
+    private final Map<ValidateCodeType, ValidateCodeProcessor> map = new EnumMap<>(ValidateCodeType.class);
 
-    public ValidateCodeProcessor findValidateProcessor(ValidateType validateType) {
+    public ValidateCodeProcessor findValidateProcessor(ValidateCodeType validateType) {
         return map.get(validateType);
+    }
+
+    public ValidateCodeProcessor findValidateProcessorByType(String type) {
+        ValidateCodeType validateCodeType = ValidateCodeType.valueOf(StringUtils.upperCase(type));
+        return findValidateProcessor(validateCodeType);
     }
 
     @Override
     public void afterPropertiesSet() {
         for (Map.Entry<String, ValidateCodeProcessor> entry : validateCodeProcessorMap.entrySet()) {
-            if (entry.getKey().contains(ValidateType.IMAGE.name().toLowerCase())) {
-                map.put(ValidateType.IMAGE, entry.getValue());
+            if (entry.getKey().contains(ValidateCodeType.IMAGE.name().toLowerCase())) {
+                map.put(ValidateCodeType.IMAGE, entry.getValue());
             }
-            if (entry.getKey().contains(ValidateType.SMS.name().toLowerCase())) {
-                map.put(ValidateType.SMS, entry.getValue());
+            if (entry.getKey().contains(ValidateCodeType.SMS.name().toLowerCase())) {
+                map.put(ValidateCodeType.SMS, entry.getValue());
             }
         }
         log.info("ValidateProcessorHolder initial processors {} ", map);

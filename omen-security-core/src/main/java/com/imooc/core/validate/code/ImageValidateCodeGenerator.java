@@ -17,9 +17,9 @@ import java.util.Random;
  * @author : Knight
  * @date : 2021/9/2 9:54 上午
  */
-@Component
+@Component("imageValidateCodeGenerator")
 @RequiredArgsConstructor
-public class ImageCodeGenerator implements ValidateCodeGenerator, InitializingBean {
+public class ImageValidateCodeGenerator implements ValidateCodeGenerator<ImageCode>, InitializingBean {
     private final SecurityProperties securityProperties;
     private Random random;
 
